@@ -1,3 +1,5 @@
+git clone git@github.com:nexmo-community/vonage-campus-client-sdk-workshop.git
+
 npm install nexmo-cli@alpha
 
 nexmo setup key secret
@@ -11,7 +13,6 @@ Private Key saved to: private.key
 nexmo uc name=bot
 User created: USR-5203d436-8a8e-4255-af1a-d07c65f1df7a
 
-git clone
 
 update .env file
 
@@ -138,6 +139,6 @@ app
     number: '447481738558'
   }]
 
-  
+
 
 ngrok http 3000 --subdomain=laka
