@@ -7,8 +7,5 @@ yarn-error.log
 *.pyc
 .yalc
 .DS_STORE
-yalc.lock
+yarn.lock
 model.json
-weights.bin
-training/models/*/
-training/data/*.*

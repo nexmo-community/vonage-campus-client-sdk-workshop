@@ -17,6 +17,8 @@ var nexmo = new Nexmo({
   privateKey: process.env.NEXMO_APPLICATION_PRIVATE_KEY_PATH
 });
 
+var botMember;
+
 const acl = {
   "paths": {
     "/*/users/**": {},
@@ -58,18 +60,6 @@ app
       jwt: jwt
     })
   })
-
-  app
-    .route('/api/bot')
-    .get((req, res) => {
-      const inputText = "what's the weather in singapore"
-      bot.classify([inputText]).then(classification => {
-        bot.getClassificationMessage(classification, inputText).then(response => {
-          res.json({response})
-        }).catch(console.error)
-      }).catch(console.error)
-      // Add the response to the chat window
-    })
 
 var activeConversationDetails;
 app
@@ -115,6 +105,7 @@ app
                       acl: acl
                     })
                     if (bot) {
+                      botMember = bot.id;
                       activeConversationDetails = {
                         user,
                         conversation,
@@ -135,11 +126,69 @@ app
 
   })
 
-  app
-    .route('/event')
-    .post((req, res) => {
-      console.log(req);
+app
+  .route('/api/bot')
+  .get((req, res) => {
+    const inputText = "what's the weather in singapore"
+    bot.classify([inputText]).then(classification => {
+      bot.getClassificationMessage(classification, inputText).then(response => {
+        res.json({
+          response
+        })
+      }).catch(console.error)
+    }).catch(console.error)
+    // Add the response to the chat window
+  })
 
-    })
+app
+  .route('/webhooks/event')
+  .post((req, res) => {
+    console.log(req.body);
+
+    if (req.body.from != botMember && req.body.type === 'text') {
+      bot.classify([req.body.body.text]).then(classification => {
+        bot.getClassificationMessage(classification, req.body.body.text).then(response => {
+          if (response === '⛅') {
+            var buttonId = rug.generateUsername("_")
+            nexmo.conversations.events.create(req.body.conversation_id, {
+              type: "custom:call-a-human",
+              from: botMember,
+              body: {
+                text: `${response} I'm not smart enough to know that. Do you want to <button id="${buttonId}">Call a Human</button>?`,
+                buttonId: buttonId
+              }
+            })
+          } else {
+            nexmo.conversations.events.create(req.body.conversation_id, {
+              type: "text",
+              from: botMember,
+              body: {
+                text: response
+              }
+            })
+          }
+        }).catch(console.error)
+      }).catch(console.error)
+    }
+  })
+
+app
+  .route('/webhooks/answer')
+  .get((req, res) => {
+    console.log(req.body);
+    var ncco = [{
+        action: 'talk',
+        text: 'Thank you for calling a human, none is available at the moment.'
+      },
+      {
+        action: 'connect',
+        endpoint: [{
+          type: 'phone',
+          number: '447481738558'
+        }]
+      }
+    ]
+    res.json(ncco)
+  })
 
 app.listen(process.env.PORT || 3000)
