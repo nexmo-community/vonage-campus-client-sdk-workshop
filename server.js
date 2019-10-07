@@ -9,6 +9,13 @@ const rug = require('username-generator')
 
 const bot = require('./bot')
 
+const Nexmo = require('nexmo')
+var nexmo = new Nexmo({
+  apiKey: process.env.NEXMO_API_KEY,
+  apiSecret: process.env.NEXMO_API_SECRET,
+  applicationId: process.env.NEXMO_APPLICATION_ID,
+  privateKey: process.env.NEXMO_APPLICATION_PRIVATE_KEY_PATH
+});
 
 var botMember;
 
@@ -47,8 +54,60 @@ app
     if (activeConversationDetails) {
       res.json(activeConversationDetails)
     } else {
+      nexmo.users.create({
+        name: rug.generateUsername("-")
+      }, (error, user) => {
+        if (error) console.log(error)
 
+        if (user) {
+          nexmo.conversations.create({
+            display_name: rug.generateUsername()
+          }, (error, conversation) => {
+            if (error) console.log(error)
 
+            if (conversation) {
+              nexmo.conversations.members.add(conversation.id, {
+                "action": "join",
+                "user_id": user.id,
+                "channel": {
+                  "type": "app"
+                }
+              }, (error, member) => {
+                if (error) console.log(error)
+
+                if (member) {
+                  nexmo.conversations.members.add(conversation.id, {
+                    "action": "join",
+                    "user_id": process.env.BOT_USER,
+                    "channel": {
+                      "type": "app"
+                    }
+                  }, (error, bot) => {
+                    if (error) console.log(error)
+                    const jwt = Nexmo.generateJwt(process.env.NEXMO_APPLICATION_PRIVATE_KEY_PATH, {
+                      application_id: process.env.NEXMO_APPLICATION_ID,
+                      sub: member.name,
+                      exp: new Date().getTime() + 86400,
+                      acl: acl
+                    })
+                    if (bot) {
+                      botMember = bot.id;
+                      activeConversationDetails = {
+                        user,
+                        conversation,
+                        member,
+                        bot,
+                        jwt
+                      }
+                      res.json(activeConversationDetails)
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      })
     }
 
   })
@@ -66,9 +125,10 @@ app
   .get((req, res) => {
     console.log(req.body);
     var ncco = [{
-
+      action: 'talk',
+      text: 'Thank you for calling a human, none is available at the moment.'
     }]
     res.json(ncco)
   })
 
-app.listen(process.env.PORT || 3000)
+app.listen(3000, () => console.log("Server listening on port 3000"))

@@ -100,7 +100,7 @@ function setupListeners() {
   activeApplication.on("call:status:changed", (call) => {
     if (call.status === "started") {
       activeCall = call;
-      appendMessage(`📞 <button id='${call.id}'>Hang Up</button>`, "bot")
+      appendMessage(`☏ <button id='${call.id}'>Hang Up</button>`, "bot")
       document.getElementById(call.id).addEventListener("click", hangUp)
     }
   });
@@ -116,7 +116,7 @@ function setupListeners() {
     textbox.value = '';
   }, false);
 
-  appendMessage("👋! Hello, I can: <b>get the weather (⛅)</b> or <b>play Music (🎵🎺🎵)</b>", "bot")
+  appendMessage("👋! Hello, I can: <b>get the weather (⛅)</b> or <b>play Music (𝄞🥁𝄞)</b>", "bot")
 }
 
 window.addEventListener('load', function() {

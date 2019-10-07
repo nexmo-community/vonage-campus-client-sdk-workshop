@@ -47,20 +47,6 @@ app.use(function(req, res, next) {
 
 app.use('/models', express.static('./training/models'))
 
-app
-  .route('/api/jwt/:user')
-  .get((req, res) => {
-    const jwt = Nexmo.generateJwt(process.env.NEXMO_APPLICATION_PRIVATE_KEY_PATH, {
-      application_id: process.env.NEXMO_APPLICATION_ID,
-      sub: req.params.user,
-      exp: new Date().getTime() + 86400,
-      acl: acl
-    })
-    res.json({
-      jwt: jwt
-    })
-  })
-
 var activeConversationDetails;
 app
   .route('/api/new')
@@ -127,27 +113,12 @@ app
   })
 
 app
-  .route('/api/bot')
-  .get((req, res) => {
-    const inputText = "what's the weather in singapore"
-    bot.classify([inputText]).then(classification => {
-      bot.getClassificationMessage(classification, inputText).then(response => {
-        res.json({
-          response
-        })
-      }).catch(console.error)
-    }).catch(console.error)
-    // Add the response to the chat window
-  })
-
-app
   .route('/webhooks/event')
   .post((req, res) => {
     console.log(req.body);
 
     if (req.body.from != botMember && req.body.type === 'text') {
-      bot.classify([req.body.body.text]).then(classification => {
-        bot.getClassificationMessage(classification, req.body.body.text).then(response => {
+        bot.getMessage(req.body.body.text).then(response => {
           if (response === '⛅') {
             var buttonId = rug.generateUsername("_")
             nexmo.conversations.events.create(req.body.conversation_id, {
@@ -168,7 +139,6 @@ app
             })
           }
         }).catch(console.error)
-      }).catch(console.error)
     }
   })
 
@@ -184,11 +154,11 @@ app
         action: 'connect',
         endpoint: [{
           type: 'phone',
-          number: '447481738558'
+          number: process.env.SUPPORT
         }]
       }
     ]
     res.json(ncco)
   })
 
-app.listen(process.env.PORT || 3000)
+app.listen(3000, () => console.log("Server listening on port 3000"))

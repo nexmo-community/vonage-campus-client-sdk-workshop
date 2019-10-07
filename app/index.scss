@@ -30,12 +30,12 @@ body {
   .header {
     text-align: center;
     padding: 20px;
-    background-color: #bada55;
-    border-bottom: 1px solid #758e16;
+    background-color: #005282;
+    border-bottom: 1px solid #fff;
     font-family: "Roboto","Helvetica","Arial",sans-serif;
     font-size: 24px;
     line-height: 1.4em;
-    color: #4C5D0E;
+    color: #fff;
   }
 
   .app {
@@ -97,8 +97,17 @@ body {
     margin: 10px;
     padding: 10px;
 
+    & button {
+      margin-right: 10px;
+      font-size: 20px;
+      border-radius: 4px;
+      padding: 9px;
+      background-color: white;
+    }
+
     &.bot {
-      background-color: #bada55;
+      background-color: #005282;
+      color: #fff;
       align-self: flex-start;
       border-radius: 4px;
       font-size: 20pt;
@@ -113,7 +122,7 @@ body {
     }
 
     &.input {
-      background-color: #758e16;
+      background-color: #33aaee;
       align-self: flex-end;
       color: white;
       font-size: 20pt;

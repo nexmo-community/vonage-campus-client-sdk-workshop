@@ -23,13 +23,15 @@ const d3 = require('d3');
 
 tf.ENV.set('WEBGL_PACK', false);
 
+const NGROK_URL = "https://laka.ngrok.io";
+
 const EMBEDDING_DIM = 512;
 
-const DENSE_MODEL_URL = 'http://laka.ngrok.io/models/intent/model.json';
-const METADATA_URL = 'http://laka.ngrok.io/models/intent/intent_metadata.json';
+const DENSE_MODEL_URL = NGROK_URL + '/models/intent/model.json';
+const METADATA_URL = NGROK_URL + '/models/intent/intent_metadata.json';
 
 const modelUrls = {
-  'bidirectional-lstm': 'http://laka.ngrok.io/models/bidirectional-tagger/model.json'
+  'bidirectional-lstm': NGROK_URL + '/models/bidirectional-tagger/model.json'
 };
 
 let use;
@@ -57,7 +59,7 @@ async function loadIntentMetadata() {
   return intentMetadata;
 }
 
-exports.classify = async function (sentences) {
+async function classify(sentences) {
   const [use, intent, metadata] = await Promise.all(
     [loadUSE(), loadIntentClassifer(DENSE_MODEL_URL), loadIntentMetadata()]);
 
@@ -79,7 +81,7 @@ exports.classify = async function (sentences) {
 }
 
 const THRESHOLD = 0.90;
-exports.getClassificationMessage = async function (softmaxArr, inputText) {
+async function getClassificationMessage(softmaxArr, inputText) {
   const {
     labels
   } = await loadIntentMetadata();
@@ -284,3 +286,8 @@ async function getWeather(location) {
 }
 
 loadTaggerModel();
+
+exports.getMessage = async function (inputText) {
+  const classification = await classify([inputText]);
+  return getClassificationMessage(classification, inputText);
+}

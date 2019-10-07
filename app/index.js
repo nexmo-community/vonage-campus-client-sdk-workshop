@@ -49,9 +49,8 @@ async function sendMessage(inputText) {
     // Add the input text to the chat window
     const msgId = appendMessage(inputText, 'input');
     // Classify the text
-    const classification = await bot.classify([inputText]);
+    const response = await bot.getMessage(inputText);
     // Add the response to the chat window
-    const response = await bot.getClassificationMessage(classification, inputText);
     appendMessage(response, 'bot', msgId);
   }
 }

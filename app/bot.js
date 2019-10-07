@@ -56,7 +56,7 @@ async function loadIntentMetadata() {
   return intentMetadata;
 }
 
-exports.classify = async function (sentences) {
+async function classify(sentences) {
   const [use, intent, metadata] = await Promise.all(
     [loadUSE(), loadIntentClassifer(DENSE_MODEL_URL), loadIntentMetadata()]);
 
@@ -78,7 +78,7 @@ exports.classify = async function (sentences) {
 }
 
 const THRESHOLD = 0.90;
-exports.getClassificationMessage = async function (softmaxArr, inputText) {
+async function getClassificationMessage(softmaxArr, inputText) {
   const {
     labels
   } = await loadIntentMetadata();
@@ -285,3 +285,8 @@ async function getWeather(location) {
 window.addEventListener('load', function() {
   loadTaggerModel();
 });
+
+exports.getMessage = async function (inputText) {
+  const classification = await classify([inputText]);
+  return getClassificationMessage(classification, inputText);
+}
