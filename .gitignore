@@ -8,3 +8,7 @@ yarn-error.log
 .yalc
 .DS_STORE
 yarn.lock
+app-details
+*.key
+.nexmo-app
+.env
