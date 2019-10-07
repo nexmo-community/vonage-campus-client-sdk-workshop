@@ -15,7 +15,8 @@
     "train": "npm-run-all train-intent train-tagger",
     "prep-client": "node copy_models.js",
     "server": "node server.js",
-    "workshop": "npm run prep-client && parcel app/index.html --open & npm run server"
+    "workshop": "npm run prep-client && parcel app/index.html --open & npm run server",
+    "client": "npm run prep-client && parcel app/index.html --open"
   },
   "author": "",
   "license": "Apache-2.0",
