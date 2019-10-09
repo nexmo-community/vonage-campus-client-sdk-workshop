@@ -38,7 +38,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
-    padding: 1em;
+    padding: 0.5em;
   }
 
   .message {
@@ -79,7 +79,7 @@ body {
 
   .controls {
     border-top: 0.5px solid #e3e3e3;
-    padding: 10px;
+    padding: 0.5em;
 
     form {
       display: flex;
@@ -91,14 +91,16 @@ body {
     #textbox {
       flex: 1;
       font-size: 100%;
+      max-width: calc(100% - 5em);
     }
 
     #speech,
     #submit {
       font-size: 100%;
-      margin-left: 10px;
       border-radius: 4px;
-      padding: 9px;
+      margin-left: 0.5em;
+      height: 2em;
+      width: 2em;
       background-color: white;
     }
   }
