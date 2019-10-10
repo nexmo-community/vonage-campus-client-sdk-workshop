@@ -26,7 +26,7 @@ let messageId = 0;
 function appendMessage(message, sender, appendAfter) {
   const messageDiv = document.createElement('div');
   messageDiv.classList = `message ${sender}`;
-  messageDiv.innerHTML = message;
+  messageDiv.innerHTML = '<span>' + message + '</span>';
   messageDiv.dataset.messageId = messageId++;
 
   const messageArea = document.getElementById('message-area');
