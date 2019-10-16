@@ -3,7 +3,7 @@
 
 ## Setup and Installation
 
-Note: These instructions use `npm`, but you can use `yarn` instead of `npm run`, if you prefer `yarn`.
+Note: These instructions use `npm`, but you can use `yarn` instead of `npm run` if you prefer `yarn`.
 
 Install dependencies
 
@@ -108,12 +108,12 @@ npm run workshop
 
 This should run the `server.js` file with `node` on port 3000, build the client JavaScript using parcel and then open the client application at http://localhost:1234/ in your default browser.
 
-Let's take a look a what the app does now. It is a chat application that allows you to talk to a bot. You can ask it things like `How's the weather in San Francisco`. If you ask it about things the bot has no answer to, you'll get a default generic message. The application is built using Vanilla JavaScript, without any third party integrations. Let's take a look at the files, and see what's already there:
+Let's take a look a what the app does now. It is a chat application that allows you to talk to a bot. You can ask things like `How's the weather in San Francisco`. If you ask it about things the bot has no answer to, you'll get a default generic message. The application is built using Vanilla JavaScript, without any third-party integrations. Let's take a look at the files, and see what's already there:
 
-- `server.js` - I've already setup an Express server listening on port 3000, that implements a few routes:
+- `server.js` - I've already set up an Express server listening on port 3000, that implements a few routes:
   - `/api/new` - this is the part that sets up the Conversation API parts that we'll use to build the chat application further. It creates a random User on the Nexmo Application, then creates a Conversation, adds the user it just created to the Conversation, and then adds the bot User we created in the beginning into the same Conversation.
-  - `/webhooks/event` - this is a placeholder for the Event URL we gave our Nexmo Application when we created it, and for now logs the incoming events.
-  - `/webhooks/answer` - this is a placeholder for the Answer URL we gave our Nexmo Application when we created it, and for now outputs a JSON response.
+  - `/webhooks/event` - this is a placeholder for the Event URL we gave our Nexmo Application when we created it, and for now, logs the incoming events.
+  - `/webhooks/answer` - this is a placeholder for the Answer URL we gave our Nexmo Application when we created it, and for now, outputs a JSON response.
 - `app/index.js` - I've also built a chat interface using Vanilla JavaScript that lets you append messages to the chat window. The bot picks up those messages, computes an answer and appends it back into the chat window. The chat has no persistence, so once you refresh the page, everything is lost.
 
 ## Re-build the app
@@ -127,7 +127,7 @@ We'll take this code, and replace the chat part with the Nexmo Client SDK, as we
  import NexmoClient from 'nexmo-client';
  ```
 
- Now we can start using the Client SDK. The first thing we need to do to be able to interact with it fully is `login()` with a JSON Web Token(JWT). The JWT is generated on the server, in the `/api/new` route, so we'll need to fetch that information, and use it to login. After logging in, the SDK returns information about the Nexmo application you're using. That allows us to interact with it. We'll also save it to an object so we can interact with it from other parts of our code.
+ Now we can start using the Client SDK. The first thing we need to do to be able to interact with it fully is `login()` with a JSON Web Token(JWT). The JWT is generated on the server, in the `/api/new` route, so we'll need to fetch that information, and use it to log in. After logging in, the SDK returns information about the Nexmo application you're using. That allows us to interact with it. We'll also save it to an object so we can interact with it from other parts of our code.
 
  From the application, we'll need to retrieve the Conversation we're using for this Chat, so we'll call `getConversation` on the app, with the Conversation ID provided from the server. After we've successfully retrieved the conversation, we'll save this in an object, so we can reference it in other parts of the code. I've wrapped this whole logic into a function called `setupConversation`, so let's add that to the `index.js` file you're editing:
 
@@ -201,7 +201,7 @@ function setupListeners() {
 }
 ```
 
-We're not using the `sendMessage` funtion anymore, and we can go ahead and delete the whole function declaration from `index.js`. `sendMessage` was the only place where we were calling our bot, so we can remove the bot import from the top of the file as well.
+We're not using the `sendMessage` function anymore, and we can go ahead and delete the whole function declaration from `index.js`. `sendMessage` was the only place where we were calling our bot, so we can remove the bot import from the top of the file as well.
 
 ### Move the bot to the Server
 
@@ -231,7 +231,7 @@ app
 
 We've now successfully replaced our chat functionality to use the Nexmo Client SDK. The client application is rebuilding itself as we update the code, but the server needs to be re-started when we make changes. You'll need to stop the running app and run `npm run workshop` again to see the changes.
 
-If you've tested the application, you'll see that there is a slight delay between loading the window and being able to interact with the chat, and that's because we didn't add any load indicators to it. We'll do that now, and replace the static message from the index file with one dinamically added to the chat window once the Conversation has been setup and we can interact with it.
+If you've tested the application, you'll see that there is a slight delay between loading the window and being able to interact with the chat, and that's because we didn't add any load indicators to it. We'll do that now, and replace the static message from the index file with one dynamically added to the chat window once the Conversation has been set up and we can interact with it.
 
 Go to the `app/index.html` file, and remove the message div from inside the `message-area`. We'll add this in the `index.js` file instead, at the end of the `setupListeners` function, after our Conversation is fully loaded and the events listeners are setup.
 
@@ -244,15 +244,15 @@ function setupListeners() {
 
 ## Update the app
 
-We've now successfully replaced our chat functionality to use the Nexmo Client SDK and improved the user experience. We can improve the user experience further. You'll notice the bot is not very smart, and can't return weather information for more out of the way locations. You can test this out with a query like "What's the weather in Hateg" (Hateg being my hometown in Romania). The bot will reply with ⛅, the default message when there's no information. We will change this to improve the user experience, and offer the user a chance to call a human in this instance.
+We've now successfully replaced our chat functionality to use the Nexmo Client SDK and improved the user experience. We can improve the user experience further. You'll notice the bot is not very smart, and can't return weather information for more out of the way locations. You can test this out with a query like "What's the weather in Hateg" (Hateg being my hometown in Romania). The bot will reply with ⛅, the default message when there's no information. We will change this to improve the user experience and offer the user a chance to call a human in this instance.
 
 ### Create custom events
 
-Let's change the server side event we generate in the Conversation, to something else in that instance. The conversation has a number of pre-set events. There isn't one that would work for this specific example, and if we send a regular text event, we'd have to add a bunch of logic on the client to interpret that message and offer UI for calling a human. Because we recognise there isn't one size fits all when it comes to Conversations, we've added the ability to have custom events in a Conversation. So we'll send a `custom:call-a-human` event instead of the `text` event when the bot doesn't have a response. That way we can listen specifically for it in the client UI, without having to do a lot of logic there.
+Let's change the server-side event we generate in the Conversation, to something else in that instance. The conversation has several pre-set events. There isn't one that would work for this specific example, and if we send a regular text event, we'd have to add a bunch of logic to the client to interpret that message and offer UI for calling a human. Because we recognize there isn't one size fits all when it comes to Conversations, we've added the ability to have custom events in a Conversation. So we'll send a `custom:call-a-human` event instead of the `text` event when the bot doesn't have a response. That way we can listen specifically for it in the client UI, without having to do a lot of logic there.
 
 Let's replace the `/webhooks/event` route in the server to first look at the message from the bot, and decide if it's sending a text event or a custom event in the Conversation.
 
-The custom event must start with `custom:`, and have the custom name appended after that, so we'll use `custom:call-a-human`. We specify the sender as the bot, and then we can add our own object in the body of the event. For this one, I've decided to send HTML as the text, and generate a random id for the button, also passing the `buttonId` along as a property. That means it's going to be easier for us when we update the client with this functionality.
+The custom event must start with `custom:`, and have the custom name appended after that, so we'll use `custom:call-a-human`. We specify the sender as the bot, and then we can add our object in the body of the event. For this one, I've decided to send HTML as the text, and generate a random id for the button, also passing the `buttonId` along as a property. That means it's going to be easier for us when we update the client with this functionality.
 
 ```javascript
 app
@@ -286,7 +286,7 @@ app
   })
 ```
 
-We can listen for this custom event in the client as well, so let's update the `app/index.js` file. The `setupListeners` function already has a method to listen for text events in the conversation, let's add another listener for `call-a-human` events.
+We can listen to this custom event in the client as well, so let's update the `app/index.js` file. The `setupListeners` function already has a method to listen for text events in the conversation, let's add another listener for `call-a-human` events.
 
 ```javascript
 function setupListeners() {
@@ -312,7 +312,7 @@ function callAHuman() {
 }
 ```
 
-When this function is called, the Nexmo application makes a GET request to the Answer URL we declared, and takes the NCCO from there to control the call. The way it's working no, we'll hear a Text to Speech prompt telling us "Thank you for calling a human, none is available at the moment.". Because it gets that NCCO, we can add the calling logic in there. So let's update the `` route in our `server.js` file to expand on this, and actually call a human.
+When this function is called, the Nexmo application makes a GET request to the Answer URL we declared and takes the NCCO from there to control the call. The way it's working no, we'll hear a Text to Speech prompt telling us "Thank you for calling a human, none is available at the moment.". Because it gets that NCCO, we can add the calling logic in there. So let's update the `` route in our `server.js` file to expand on this, and actually, call a human.
 
 ```javascript
 app
@@ -337,7 +337,7 @@ app
 
 If you've attended the Voice workshop today, you've learned all about NCCOs and the capabilities there. If you didn't, the `connect` action will connect the phone call to a phone number, so you can have a call with a human.
 
-If you run the app now, you'll notice we don't have the ability to end the call from our web application. We can add that functionality now. The Nexmo Application issues events, same as the Conversation, and we can listen for those events as well. Whenever the status of a call changes, there is an `call:status:changed` event being fired on the application, that has information about the current status of the call. We'll check to see when the call has started, and add UI to the chat window for hanging up the call. Let's append the listener in the `setupListeners` function in `app/index.js`.
+If you run the app now, you'll notice we can't end the call from our web application. We can add that functionality now. The Nexmo Application issues events, same as the Conversation, and we can listen for those events as well. Whenever the status of a call changes, there is a `call:status:changed` event being fired on the application, that has information about the current status of the call. We'll check to see when the call has started, and add UI to the chat window for hanging up the call. Let's append the listener in the `setupListeners` function in `app/index.js`.
 
 ```javascript
 var activeCall;
@@ -354,7 +354,7 @@ function setupListeners() {
 }
 ```
 
-We're saving a reference to the call in an object so we can interact with it from other parts of our application. We're also appending a button to the chat window to hang up a call, adding an `click` event listener to it.
+We're saving a reference to the call in an object so we can interact with it from other parts of our application. We're also appending a button to the chat window to hang up a call, adding a `click` event listener to it.
 
 We still need to implement the `hangUp` method, so let's do that now. The Nexmo Call object has a `hangUp` method on it, that hangs up the current call, so we'll use that.
 
@@ -370,7 +370,7 @@ We'll need to restart the whole application for the server changes to take place
 
 ## [Debugging] Preparing training data
 
-The training data is all pre-run, but if you want to re-train the model or use different intents, there are four npm/yarn scripts listed in package.json for preparing the training data. Each writes out one of more new files.
+The training data is all pre-run, but if you want to re-train the model or use different intents, there are four npm/yarn scripts listed in package.json for preparing the training data. Each writes out one or more new files.
 
 The two scripts needed to train the intent classifier are:
 
@@ -404,7 +404,7 @@ To train the token tagging model run:
 npm run train-tagger
 ```
 
-Each of these scripts take multiple options, look at `training/train-intent.js` and `training/train-tagger.js` for details.
+Each of these scripts takes multiple options, look at `training/train-intent.js` and `training/train-tagger.js` for details.
 
 These scripts will output model artifacts in the `training/models` folder.
 
