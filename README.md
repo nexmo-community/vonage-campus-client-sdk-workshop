@@ -1,5 +1,13 @@
 # Vonage Campus Workshop - Building a voice-enabled website using the Nexmo Client SDK
 
+## Clone the repo
+
+Clone this repository and change the current directory to it.
+
+```
+git clone https://github.com/nexmo-community/vonage-campus-client-sdk-workshop.git
+cd vonage-campus-client-sdk-workshop
+```
 
 ## Setup and Installation
 
