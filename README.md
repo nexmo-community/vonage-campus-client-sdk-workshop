@@ -366,7 +366,36 @@ function hangUp() {
 
 We'll need to restart the whole application for the server changes to take place, so if we run `npm run workshop` again, we'll be able to see the full application and interact with it.
 
+### [Optional] Display Conversation history
 
+If you want to take this application we've built a step further, I thought we could display the Conversation history on the screen every time a user refreshes the page. The way it's built now, the history always gets saved in the Nexmo Conversation, we just weren't showing it in the client UI. We can add that now.
+
+After you get the conversation with `app.getConversation`, you can interact with the methods available there. One of them is `getEvents`, which is a paginated map of the events that happened in the Conversation. We could call `getEvents` instead of `setupListeners`, and use the `text` events in the Conversation to display the chat history before setting up the listeners and letting the user interact with the Conversation.
+
+```javascript
+function setupConversation() {
+  ...
+        .then(conversation => {
+          console.log('*** Retrieved conversations', conversation);
+          activeConversation = conversation;
+          conversation
+            .getEvents({
+              page_size: 20
+            })
+            .then((events_page) => {
+              events_page.items.forEach((value, key) => {
+                if (value.type === "text") {
+                  appendMessage(`${value.body.text}`, `${conversation.members.get(value.from).user.name==='bot' ? 'bot' : 'input'}`)
+                }
+              });
+
+              setupListeners();
+            })
+            .catch(console.error);
+        })
+    ...
+}
+```
 
 ## [Debugging] Preparing training data
 
