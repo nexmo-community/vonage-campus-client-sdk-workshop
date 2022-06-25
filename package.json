@@ -36,7 +36,7 @@
     "ndjson": "^1.5.0",
     "nexmo": "^2.5.4-beta-1",
     "nexmo-client": "^6.0.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "npm-run-all": "^4.1.5",
     "username-generator": "^1.1.0"
   },
