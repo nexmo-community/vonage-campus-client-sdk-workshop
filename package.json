@@ -22,7 +22,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@tensorflow-models/universal-sentence-encoder": "1.1.1",
-    "@tensorflow/tfjs": "1.2.9",
+    "@tensorflow/tfjs": "2.5.0",
     "@tensorflow/tfjs-node": "1.2.9",
     "@tensorflow/tfjs-node-gpu": "1.2.9",
     "argparse": "^1.0.10",
